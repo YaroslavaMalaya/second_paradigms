@@ -46,7 +46,7 @@ void addNewLine(LinkedList* list) {
     }
 }
 
-void saveTextToFile(LinkedList* list, string fileName) {
+void saveTextToFile(LinkedList* list, const string& fileName) {
     ofstream file(fileName, ios::app);
     Node* current = list->head;
     while (current != nullptr) {
@@ -56,7 +56,7 @@ void saveTextToFile(LinkedList* list, string fileName) {
     file.close();
 }
 
-void loadTextFromFile(LinkedList* list, string fileName) {
+void loadTextFromFile(LinkedList* list, const string& fileName) {
     Node* current = list->head;
     while (current != nullptr) {
         Node* next = current->next;
@@ -190,33 +190,41 @@ void deleteText(LinkedList* list, int lineIndex, int startIndex, int number){
     int currentSymbol = 0;
     int currentNumber = 0;
 
-    while (currentLine < lineIndex) {
-        list->previous = list->current;
-        list->current = list->current->next;
-        if (list->current == nullptr) {
-            cout << "\nIncorrect line index.\n";
-            break;
+    if (lineIndex == 0 && startIndex == 0) {
+        while (currentNumber != number) {
+            list->current = list->current->next;
+            currentNumber++;
         }
-        if (list->current->value == '\n') {
-            currentLine++;
+        list->head = list->current;
+    } else {
+        while (currentLine < lineIndex) {
+            list->previous = list->current;
+            list->current = list->current->next;
+            if (list->current == nullptr) {
+                cout << "\nIncorrect line index.\n";
+                break;
+            }
+            if (list->current->value == '\n') {
+                currentLine++;
+            }
         }
-    }
 
-    while (currentSymbol < startIndex) {
-        list->previous = list->current;
-        list->current = list->current->next;
-        if (list->current == nullptr) {
-            cout << "\nIncorrect symbol index.\n";
-            break;
+        while (currentSymbol < startIndex) {
+            list->previous = list->current;
+            list->current = list->current->next;
+            if (list->current == nullptr) {
+                cout << "\nIncorrect symbol index.\n";
+                break;
+            }
+            currentSymbol++;
         }
-        currentSymbol++;
-    }
 
-    while(currentNumber != number)
-    {
-        list->previous->next = list->current->next;
-        list->current = list->previous->next;
-        currentNumber++;
+        while(currentNumber != number)
+        {
+            list->previous->next = list->current->next;
+            list->current = list->previous->next;
+            currentNumber++;
+        }
     }
 }
 
@@ -224,7 +232,7 @@ void pushCurrentCommand(LinkedList* list, stack<LinkedList>* stack) {
     if(stack->size() > 3){
         stack->pop();
     }
-    LinkedList newList;
+    LinkedList newList{};
     newList.head = nullptr;
     newList.current = nullptr;
     newList.previous = nullptr;
@@ -261,6 +269,117 @@ LinkedList undo(stack<LinkedList>* stack) {
     }
 }
 
+void cutText(LinkedList* list, int lineIndex, int startIndex, int number, LinkedList* buffer){
+    buffer->head = nullptr;
+    buffer->current = nullptr;
+    buffer->previous = nullptr;
+
+    list->current = list->head;
+    list->previous = nullptr;
+    int currentLine = 0;
+    int currentSymbol = 0;
+    int currentNumber = 0;
+
+    if (lineIndex == 0 && startIndex == 0) {
+        while (currentNumber != number) {
+            list->current = list->current->next;
+            currentNumber++;
+        }
+        list->head = list->current;
+    } else {
+        while (currentLine < lineIndex) {
+            list->previous = list->current;
+            list->current = list->current->next;
+            if (list->current == nullptr) {
+                cout << "\nIncorrect line index.\n";
+                break;
+            }
+            if (list->current->value == '\n') {
+                currentLine++;
+            }
+        }
+
+        while (currentSymbol < startIndex) {
+            list->previous = list->current;
+            list->current = list->current->next;
+            if (list->current == nullptr) {
+                cout << "\nIncorrect symbol index.\n";
+                break;
+            }
+            currentSymbol++;
+        }
+
+        while(currentNumber != number)
+        {
+            if (buffer->head == nullptr) {
+                buffer->head = new Node;
+                buffer->head->value = list->current->value;
+                buffer->head->next = nullptr;
+                buffer->current = buffer->head;
+            } else {
+                buffer->current->next = new Node;
+                buffer->current->next->value = list->current->value;
+                buffer->current->next->next = nullptr;
+                buffer->current = buffer->current->next;
+            }
+            list->previous->next = list->current->next;
+            list->current = list->previous->next;
+            currentNumber++;
+        }
+    }
+}
+
+void copyText(LinkedList* list, int lineIndex, int startIndex, int number, LinkedList* buffer){
+    buffer->head = nullptr;
+    buffer->current = nullptr;
+    buffer->previous = nullptr;
+
+    list->current = list->head;
+    list->previous = nullptr;
+    int currentLine = 0;
+    int currentSymbol = 0;
+    int currentNumber = 0;
+
+    while (currentLine < lineIndex) {
+        list->previous = list->current;
+        list->current = list->current->next;
+        if (list->current == nullptr) {
+            cout << "\nIncorrect line index.\n";
+            break;
+        }
+        if (list->current->value == '\n') {
+            currentLine++;
+        }
+    }
+
+    while (currentSymbol < startIndex) {
+        list->previous = list->current;
+        list->current = list->current->next;
+        if (list->current == nullptr) {
+            cout << "\nIncorrect symbol index.\n";
+            break;
+        }
+        currentSymbol++;
+    }
+
+    while(currentNumber != number)
+    {
+        if (buffer->head == nullptr) {
+            buffer->head = new Node;
+            buffer->head->value = list->current->value;
+            buffer->head->next = nullptr;
+            buffer->current = buffer->head;
+        } else {
+            buffer->current->next = new Node;
+            buffer->current->next->value = list->current->value;
+            buffer->current->next->next = nullptr;
+            buffer->current = buffer->current->next;
+        }
+        list->current = list->current->next;
+        currentNumber++;
+    }
+}
+
 int main() {
     int command;
     LinkedList myList{};
@@ -274,13 +393,15 @@ int main() {
     int startIndex;
     int numberIndex;
     stack<LinkedList> undoStack;
+    LinkedList buffer{};
 
     while (true) {
         system("clear");
 
-        //cout << "\nAll commands:\n1-enter new text.\n2-start the new line.\n3-saving the information to your file."
+        // cout << "\nAll commands:\n1-enter new text.\n2-start the new line.\n3-saving the information to your file."
                 "\n4-loading the information from your file.\n5-print the current text to console.\n6-insert the text "
-                "by line and symbol index.\n7-search by word. \n\n";
+                "by line and symbol index.\n7-search by word.\n8-delete command.\n9-undo command.\n10-redo command."
+                "\n11-cut command.\n12-paste command.\n13-copy command.\n";
 
         cout << "Choose the command: ";
         cin >> command;
@@ -354,10 +475,22 @@ int main() {
             case 11:
                 cout << "Choose line and index and number of symbols: ";
                 cin >> lineIndex >> startIndex >> numberIndex;
+                cutText(&myList, lineIndex, startIndex, numberIndex, &buffer);
+                //printLinkedList(&buffer);
                 break;
             case 12:
+                cout << "Choose line and index: ";
+                cin >> lineIndex >> startIndex;
                 break;
             case 13:
+                cout << "Choose line and index and number of symbols: ";
+                cin >> lineIndex >> startIndex >> numberIndex;
+                copyText(&myList, lineIndex, startIndex, numberIndex, &buffer);
+                printLinkedList(&buffer);
+                printLinkedList(&myList);
+                break;
+            case 14:
+                cout << "The command 14.\n";
                 break;
             default:
                 cout << "The command is not implemented.\n";
