@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <stack>
 using namespace std;
 
 struct Node {
@@ -219,6 +220,47 @@ void deleteText(LinkedList* list, int lineIndex, int startIndex, int number){
     }
 }
 
+void pushCurrentCommand(LinkedList* list, stack<LinkedList>* stack) {
+    if(stack->size() > 3){
+        stack->pop();
+    }
+    LinkedList newList;
+    newList.head = nullptr;
+    newList.current = nullptr;
+    newList.previous = nullptr;
+    Node* current = list->head;
+
+    while (current != nullptr) {
+        if (newList.head == nullptr) {
+            newList.head = new Node;
+            newList.head->value = current->value;
+            newList.head->next = nullptr;
+            newList.current = newList.head;
+        } else {
+            newList.current->next = new Node;
+            newList.current->next->value = current->value;
+            newList.current->next->next = nullptr;
+            newList.current = newList.current->next;
+        }
+        current = current->next;
+    }
+    stack->push(newList);
+}
+
+LinkedList undo(stack<LinkedList>* stack) {
+    if (stack->size() > 1)
+    {
+        stack->pop();
+        stack->pop();
+        LinkedList newMyList = stack->top();
+        stack->pop();
+        return newMyList;
+    } else {
+        cout << "Nothing to undo.";
+        return stack->top();
+    }
+}
+
 int main() {
     int command;
     LinkedList myList{};
@@ -227,23 +269,20 @@ int main() {
     string input;
     string fileName;
     string searchText;
-    //char input[100];
-    //char fileName[100];
     int lineIndex;
     int symbolIndex;
-    //char searchText[100];
-    int lineIndexDelete;
-    int startIndexDelete;
-    int numberIndexDelete;
+    int startIndex;
+    int numberIndex;
+    stack<LinkedList> undoStack;
 
     while (true) {
         system("clear");
 
-        cout << "\nAll commands:\n1-enter new text.\n2-start the new line.\n3-saving the information to your file."
+        //cout << "\nAll commands:\n1-enter new text.\n2-start the new line.\n3-saving the information to your file."
                 "\n4-loading the information from your file.\n5-print the current text to console.\n6-insert the text "
                 "by line and symbol index.\n7-search by word. \n\n";
 
-        cout << "Choose the command:\n";
+        cout << "Choose the command: ";
         cin >> command;
         switch (command) {
             case 1:
@@ -252,10 +291,12 @@ int main() {
                 getline(cin, input);
                 addCharElement(&myList, input);
                 printLinkedList(&myList);
+                pushCurrentCommand(&myList, &undoStack);
                 break;
             case 2:
                 addNewLine(&myList);
                 cout << "New line is started.\n";
+                pushCurrentCommand(&myList, &undoStack);
                 break;
             case 3:
                 cout << "Enter the file name for saving: ";
@@ -270,11 +311,12 @@ int main() {
                     loadTextFromFile(&myList, fileName);
                     cout << "Text has been loaded successfully.\n";
                 } else {
-                    cout << "Choose command 3." << endl;
+                    cout << "Choose command 3.\n";
                 }
                 break;
             case 5:
                 printLinkedList(&myList);
+                pushCurrentCommand(&myList, &undoStack);
                 break;
             case 6:
                 cout << "Choose line and index: ";
@@ -283,6 +325,7 @@ int main() {
                 cout << "Enter text to insert (please, no more than 100 characters): ";
                 getline(cin, input);
                 insertText(&myList, lineIndex, symbolIndex, input);
+                pushCurrentCommand(&myList, &undoStack);
                 break;
             case 7:
                 cin.ignore(); // clear the input buffer
@@ -290,12 +333,31 @@ int main() {
                 getline(cin, searchText);
                 cout << "Text is present in this position: ";
                 searchInText(&myList, searchText);
+                pushCurrentCommand(&myList, &undoStack);
                 break;
             case 8:
                 cout << "Choose line, index and number of symbols: ";
-                cin >> lineIndexDelete >> startIndexDelete >> numberIndexDelete;
-                deleteText(&myList, lineIndexDelete, startIndexDelete, numberIndexDelete);
+                cin >> lineIndex >> startIndex >> numberIndex;
+                deleteText(&myList, lineIndex, startIndex, numberIndex);
                 cout << "Text has been deleted successfully.\n";
+                pushCurrentCommand(&myList, &undoStack);
+                break;
+            case 9:
+                myList = undo(&undoStack);
+                printLinkedList(&myList);
+                cout << "Undo completed.\n";
+                break;
+            case 10:
+                // some code will be here
+                cout << "Redo completed.\n";
+                break;
+            case 11:
+                cout << "Choose line and index and number of symbols: ";
+                cin >> lineIndex >> startIndex >> numberIndex;
+                break;
+            case 12:
+                break;
+            case 13:
                 break;
             default:
                 cout << "The command is not implemented.\n";
