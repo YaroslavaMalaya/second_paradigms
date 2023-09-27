@@ -380,6 +380,45 @@ void copyText(LinkedList* list, int lineIndex, int startIndex, int number, Linke
     }
 }
 
+void pasteText(LinkedList* list, int lineIndex, int startIndex, LinkedList* buffer) {
+    list->current = list->head;
+    if (lineIndex == 0 && startIndex == 0) {
+        buffer->current->next = list->current;
+        list->head = buffer->head;
+    } else {
+        Node *previous = nullptr;
+        int currentLine = 0;
+        int currentSymbol = 0;
+
+        while (currentLine < lineIndex) {
+            previous = list->current;
+            list->current = previous->next;
+            if (list->current == nullptr) {
+                cout << "\nIncorrect line index.\n";
+                break;
+            }
+            if (list->current->value == '\n') {
+                currentLine++;
+            }
+        }
+
+        while (currentSymbol < startIndex) {
+            previous = list->current;
+            list->current = previous->next;
+            if (list->current == nullptr) {
+                cout << "\nIncorrect symbol index.\n";
+                break;
+            }
+            currentSymbol++;
+        }
+
+        Node *temp = nullptr;
+        temp = list->current->next;
+        buffer->current->next = temp;
+        list->current->next = buffer->head;
+    }
+}
+
 int main() {
     int command;
     LinkedList myList{};
@@ -395,14 +434,13 @@ int main() {
     stack<LinkedList> undoStack;
     LinkedList buffer{};
 
+    cout << "\nAll commands:\n1-enter new text.\n2-start the new line.\n3-saving the information to your file."
+            "\n4-loading the information from your file.\n5-print the current text to console.\n6-insert the text "
+            "by line and symbol index.\n7-search by word.\n8-delete command.\n9-undo command.\n10-redo command."
+            "\n11-cut command.\n12-paste command.\n13-copy command.\n";
+
     while (true) {
-        system("clear");
-
-        // cout << "\nAll commands:\n1-enter new text.\n2-start the new line.\n3-saving the information to your file."
-                "\n4-loading the information from your file.\n5-print the current text to console.\n6-insert the text "
-                "by line and symbol index.\n7-search by word.\n8-delete command.\n9-undo command.\n10-redo command."
-                "\n11-cut command.\n12-paste command.\n13-copy command.\n";
-
+        //system("clear");
         cout << "Choose the command: ";
         cin >> command;
         switch (command) {
@@ -481,6 +519,8 @@ int main() {
             case 12:
                 cout << "Choose line and index: ";
                 cin >> lineIndex >> startIndex;
+                pasteText(&myList, lineIndex, startIndex, &buffer);
+                printLinkedList(&myList);
                 break;
             case 13:
                 cout << "Choose line and index and number of symbols: ";
