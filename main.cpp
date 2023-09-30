@@ -127,6 +127,9 @@ int main() {
                 myList.replacementText(&myList, lineIndex, startIndex, replText);
                 myList.printLinkedList(&myList);
                 break;
+            case 15:
+                cout << "This is command num 15.\n";
+                break;
             default:
                 cout << "The command is not implemented.\n";
                 break;
