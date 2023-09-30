@@ -31,4 +31,5 @@ public:
     void copyText(LinkedList* list, int lineIndex, int startIndex, int number, LinkedList* buffer);
     void pasteText(LinkedList* list, int lineIndex, int startIndex, LinkedList* buffer);
     LinkedList redo(stack<LinkedList>* stack);
+    void replacementText(LinkedList *list, int lineIndex, int startIndex, string buffer);
 };

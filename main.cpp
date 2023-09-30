@@ -18,11 +18,12 @@ int main() {
     stack<LinkedList> undoStack;
     LinkedList buffer{};
     stack<LinkedList> redoStack;
+    string replText;
 
     cout << "\nAll commands:\n1-enter new text.\n2-start the new line.\n3-saving the information to your file."
             "\n4-loading the information from your file.\n5-print the current text to console.\n6-insert the text "
             "by line and symbol index.\n7-search by word.\n8-delete command.\n9-undo command.\n10-redo command."
-            "\n11-cut command.\n12-paste command.\n13-copy command.\n";
+            "\n11-cut command.\n12-paste command.\n13-copy command.\n14-replacement command.\n";
 
     while (true) {
         //system("clear");
@@ -117,7 +118,13 @@ int main() {
                 myList.printLinkedList(&myList);
                 break;
             case 14:
-                cout << "The command 14.\n";
+                cout << "Choose line and index: ";
+                cin >> lineIndex >> startIndex;
+                cin.ignore();
+                cout << "Write text: ";
+                getline(cin, replText);
+                myList.replacementText(&myList, lineIndex, startIndex, replText);
+                myList.printLinkedList(&myList);
                 break;
             default:
                 cout << "The command is not implemented.\n";

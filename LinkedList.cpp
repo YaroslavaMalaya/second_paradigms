@@ -382,13 +382,11 @@ void LinkedList::pasteText(LinkedList* list, int lineIndex, int startIndex, Link
         buffer->current->next = list->current;
         list->head = buffer->head;
     } else {
-        Node *previous = nullptr;
         int currentLine = 0;
         int currentSymbol = 0;
 
         while (currentLine < lineIndex) {
-            previous = list->current;
-            list->current = previous->next;
+            list->current = list->current->next;
             if (list->current == nullptr) {
                 cout << "\nIncorrect line index.\n";
                 break;
@@ -399,8 +397,7 @@ void LinkedList::pasteText(LinkedList* list, int lineIndex, int startIndex, Link
         }
 
         while (currentSymbol < startIndex) {
-            previous = list->current;
-            list->current = previous->next;
+            list->current = list->current->next;
             if (list->current == nullptr) {
                 cout << "\nIncorrect symbol index.\n";
                 break;
@@ -426,5 +423,56 @@ LinkedList LinkedList::redo(stack<LinkedList>* stack) {
     } else {
         cout << "Nothing to redo.";
         return stack->top();
+    }
+}
+
+void LinkedList::replacementText(LinkedList* list, int lineIndex, int startIndex, string buffer) {
+    LinkedList newList{};
+    addCharElement(&newList, buffer);
+    int lengthBuffer = buffer.length();
+    int checkLength = 0;
+    list->current = list->head;
+
+    if (lineIndex == 0 && startIndex == 0) {
+        while (checkLength != lengthBuffer)
+        {
+            list->current = list->current->next;
+            checkLength++;
+        }
+        newList.current->next = list->current;
+        list->head = newList.head;
+    } else {
+        int currentLine = 0;
+        int currentSymbol = 0;
+
+        while (currentLine < lineIndex) {
+            list->current = list->current->next;
+            if (list->current == nullptr) {
+                cout << "\nIncorrect line index.\n";
+                break;
+            }
+            if (list->current->value == '\n') {
+                currentLine++;
+            }
+        }
+
+        while (currentSymbol < startIndex) {
+            list->previous = list->current;
+            list->current = list->current->next;
+            if (list->current == nullptr) {
+                cout << "\nIncorrect symbol index.\n";
+                break;
+            }
+            currentSymbol++;
+        }
+
+        while (checkLength != lengthBuffer - 1)
+        {
+            list->current = list->current->next;
+            checkLength++;
+        }
+        Node *temp = list->current->next;
+        newList.current->next = temp;
+        list->previous->next = newList.head;
     }
 }
