@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stack>
 #include "LinkedList.h"
+#include "Stack.h"
 using namespace std;
 
 int main() {
@@ -36,12 +37,12 @@ int main() {
                 getline(cin, input);
                 myList.addCharElement(&myList, input);
                 myList.printLinkedList(&myList);
-                myList.pushCurrentCommand(&myList, &undoStack);
+                pushCurrentCommand(&myList, &undoStack);
                 break;
             case 2:
                 myList.addNewLine(&myList);
                 cout << "New line is started.\n";
-                myList.pushCurrentCommand(&myList, &undoStack);
+                pushCurrentCommand(&myList, &undoStack);
                 break;
             case 3:
                 cout << "Enter the file name for saving: ";
@@ -61,7 +62,7 @@ int main() {
                 break;
             case 5:
                 myList.printLinkedList(&myList);
-                myList.pushCurrentCommand(&myList, &undoStack);
+                pushCurrentCommand(&myList, &undoStack);
                 break;
             case 6:
                 cout << "Choose line and index: ";
@@ -70,7 +71,7 @@ int main() {
                 cout << "Enter text to insert (please, no more than 100 characters): ";
                 getline(cin, input);
                 myList.insertText(&myList, lineIndex, symbolIndex, input);
-                myList.pushCurrentCommand(&myList, &undoStack);
+                pushCurrentCommand(&myList, &undoStack);
                 break;
             case 7:
                 cin.ignore(); // clear the input buffer
@@ -78,23 +79,23 @@ int main() {
                 getline(cin, searchText);
                 cout << "Text is present in this position: ";
                 myList.searchInText(&myList, searchText);
-                myList.pushCurrentCommand(&myList, &undoStack);
+                pushCurrentCommand(&myList, &undoStack);
                 break;
             case 8:
                 cout << "Choose line, index and number of symbols: ";
                 cin >> lineIndex >> startIndex >> numberIndex;
                 myList.deleteText(&myList, lineIndex, startIndex, numberIndex);
                 cout << "Text has been deleted successfully.\n";
-                myList.pushCurrentCommand(&myList, &undoStack);
+                pushCurrentCommand(&myList, &undoStack);
                 break;
             case 9:
-                myList = myList.undo(&undoStack, &redoStack);
+                myList = undo(&undoStack, &redoStack);
                 myList.printLinkedList(&myList);
-                myList.pushCurrentCommand(&myList, &redoStack);
+                pushCurrentCommand(&myList, &redoStack);
                 cout << "Undo completed.\n";
                 break;
             case 10:
-                myList = myList.redo(&redoStack);
+                myList = redo(&redoStack);
                 myList.printLinkedList(&myList);
                 cout << "Redo completed.\n";
                 break;

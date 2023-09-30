@@ -218,53 +218,6 @@ void LinkedList::deleteText(LinkedList* list, int lineIndex, int startIndex, int
     }
 }
 
-void LinkedList::pushCurrentCommand(LinkedList* list, stack<LinkedList>* stack) {
-//    if(stack->size() > 3){
-//        stack->pop();
-//    }
-    LinkedList newList{};
-    newList.head = nullptr;
-    newList.current = nullptr;
-    newList.previous = nullptr;
-    Node* current = list->head;
-
-    while (current != nullptr) {
-        if (newList.head == nullptr) {
-            newList.head = new Node;
-            newList.head->value = current->value;
-            newList.head->next = nullptr;
-            newList.current = newList.head;
-        } else {
-            newList.current->next = new Node;
-            newList.current->next->value = current->value;
-            newList.current->next->next = nullptr;
-            newList.current = newList.current->next;
-        }
-        current = current->next;
-    }
-    stack->push(newList);
-}
-
-LinkedList LinkedList::undo(stack<LinkedList>* stack, std::stack<LinkedList>* stack2) {
-    if (stack->size() > 1) {
-        LinkedList list1 = stack->top();
-        stack->pop();
-        pushCurrentCommand(&list1, stack2);
-        LinkedList list2 = stack->top();
-        stack->pop();
-        pushCurrentCommand(&list2, stack2);
-        LinkedList list3 = stack->top();
-        stack->pop();
-        pushCurrentCommand(&list3, stack2);
-        LinkedList newMyList = stack->top();
-        stack->pop();
-        return newMyList;
-    } else {
-        cout << "Nothing to undo.";
-        return stack->top();
-    }
-}
-
 void LinkedList::cutText(LinkedList* list, int lineIndex, int startIndex, int number, LinkedList* buffer){
     buffer->head = nullptr;
     buffer->current = nullptr;
@@ -409,20 +362,6 @@ void LinkedList::pasteText(LinkedList* list, int lineIndex, int startIndex, Link
         temp = list->current->next;
         buffer->current->next = temp;
         list->current->next = buffer->head;
-    }
-}
-
-LinkedList LinkedList::redo(stack<LinkedList>* stack) {
-    if (!stack->empty()) {
-        stack->pop();
-        stack->pop();
-        stack->pop();
-        LinkedList redoList = stack->top();
-        stack->pop();
-        return redoList;
-    } else {
-        cout << "Nothing to redo.";
-        return stack->top();
     }
 }
 
