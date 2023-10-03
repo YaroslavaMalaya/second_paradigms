@@ -28,12 +28,12 @@ int main() {
 
     while (true) {
         //system("clear");
-        cout << "Choose the command: ";
+        cout << "\nChoose the command: ";
         cin >> command;
         switch (command) {
             case 1:
                 cin.ignore(); // clear the input buffer
-                cout << "Enter text to append (please, no more than 100 characters): ";
+                cout << "Enter text to append: ";
                 getline(cin, input);
                 myList.addCharElement(&myList, input);
                 myList.printLinkedList(&myList);
@@ -68,7 +68,7 @@ int main() {
                 cout << "Choose line and index: ";
                 cin >> lineIndex >> symbolIndex;
                 cin.ignore(); // clear the input buffer
-                cout << "Enter text to insert (please, no more than 100 characters): ";
+                cout << "Enter text to insert: ";
                 getline(cin, input);
                 myList.insertText(&myList, lineIndex, symbolIndex, input);
                 pushCurrentCommand(&myList, &undoStack);
@@ -115,7 +115,6 @@ int main() {
                 cout << "Choose line and index and number of symbols: ";
                 cin >> lineIndex >> startIndex >> numberIndex;
                 myList.copyText(&myList, lineIndex, startIndex, numberIndex, &buffer);
-                myList.printLinkedList(&buffer);
                 myList.printLinkedList(&myList);
                 break;
             case 14:
@@ -128,7 +127,58 @@ int main() {
                 myList.printLinkedList(&myList);
                 break;
             case 15:
-                cout << "This is command num 15.\n";
+                cout << "Choose line and index: ";
+                cin >> lineIndex >> startIndex;
+                myList.moveToPosition(&myList, lineIndex, startIndex);
+                int subCommand;
+                cout << "Choose a subcommand: \n"
+                     << "1 - cut.\n"
+                     << "2 - copy.\n"
+                     << "3 - paste.\n"
+                     << "4 - delete.\n"
+                     << "5 - insert.\n"
+                     << "Enter subcommand: ";
+                cin >> subCommand;
+                cin.ignore();
+
+                switch (subCommand) {
+                    case 1:
+                        cout << "Choose number of symbols: ";
+                        cin >> numberIndex;
+                        myList.cutTextCursor(&myList, &buffer, numberIndex);
+                        myList.printLinkedList(&myList);
+                        break;
+                    case 2:
+                        cout << "Choose number of symbols: ";
+                        cin >> numberIndex;
+                        myList.copyTextCursor(&myList, &buffer, numberIndex);
+                        buffer.printLinkedList(&buffer);
+                        myList.printLinkedList(&myList);
+                        pushCurrentCommand(&myList, &redoStack);
+                        break;
+                    case 3:
+                        myList.pasteTextCursor(&myList, &buffer);
+                        myList.printLinkedList(&myList);
+                        pushCurrentCommand(&myList, &redoStack);
+                        break;
+                    case 4:
+                        cout << "Choose number of symbols: ";
+                        cin >> numberIndex;
+                        myList.deleteTextCursor(&myList,numberIndex);
+                        myList.printLinkedList(&myList);
+                        pushCurrentCommand(&myList, &redoStack);
+                        break;
+                    case 5:
+                        cout << "Enter text to insert: ";
+                        getline(cin, input);
+                        myList.insertTextCursor(&myList, input);
+                        myList.printLinkedList(&myList);
+                        pushCurrentCommand(&myList, &redoStack);
+                        break;
+                    default:
+                        cout << "Invalid subcommand.\n";
+                        break;
+                }
                 break;
             default:
                 cout << "The command is not implemented.\n";

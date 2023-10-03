@@ -358,8 +358,7 @@ void LinkedList::pasteText(LinkedList* list, int lineIndex, int startIndex, Link
             currentSymbol++;
         }
 
-        Node *temp = nullptr;
-        temp = list->current->next;
+        Node *temp = list->current->next;
         buffer->current->next = temp;
         list->current->next = buffer->head;
     }
@@ -414,4 +413,163 @@ void LinkedList::replacementText(LinkedList* list, int lineIndex, int startIndex
         newList.current->next = temp;
         list->previous->next = newList.head;
     }
+}
+
+// cursor logic
+
+void LinkedList::moveToPosition(LinkedList *list, int lineIndex, int startIndex){
+    Node* cursor = new Node;
+    cursor->value = '|';
+    list->current = list->head;
+    if (lineIndex == 0 && startIndex == 0) {
+        cursor->next = list->head;
+        list->head = cursor;
+    } else {
+        int currentLine = 0;
+        int currentSymbol = 0;
+
+        while (currentLine < lineIndex) {
+            list->current = list->current->next;
+            if (list->current == nullptr) {
+                cout << "\nIncorrect line index.\n";
+                break;
+            }
+            if (list->current->value == '\n') {
+                currentLine++;
+            }
+        }
+
+        while (currentSymbol < startIndex) {
+            list->current = list->current->next;
+            if (list->current == nullptr) {
+                cout << "\nIncorrect symbol index.\n";
+                break;
+            }
+            currentSymbol++;
+        }
+
+        Node *temp = list->current->next;
+        cursor->next = temp;
+        list->current->next = cursor;
+    }
+    printLinkedList(list);
+}
+
+void LinkedList::cutTextCursor(LinkedList *list, LinkedList *buffer, int number){
+    buffer->head = nullptr;
+    buffer->current = nullptr;
+    buffer->previous = nullptr;
+    int currentNumber = 0;
+
+    while (list->current->value != '|') {
+        list->previous = list->current;
+        list->current = list->current->next;
+    }
+
+    list->previous->next = list->current->next;
+    list->current = list->current->next;
+
+    while(currentNumber != number)
+    {
+        if (buffer->head == nullptr) {
+            buffer->head = new Node;
+            buffer->head->value = list->current->value;
+            buffer->head->next = nullptr;
+            buffer->current = buffer->head;
+        } else {
+            buffer->current->next = new Node;
+            buffer->current->next->value = list->current->value;
+            buffer->current->next->next = nullptr;
+            buffer->current = buffer->current->next;
+        }
+        list->previous->next = list->current->next;
+        list->current = list->previous->next;
+        currentNumber++;
+    }
+}
+
+void LinkedList::copyTextCursor(LinkedList *list, LinkedList *buffer, int number){
+    buffer->head = nullptr;
+    buffer->current = nullptr;
+    buffer->previous = nullptr;
+    int currentNumber = 0;
+
+    while (list->current->value != '|') {
+        list->previous = list->current;
+        list->current = list->current->next;
+    }
+
+    list->previous->next = list->current->next;
+    list->current = list->current->next;
+
+    while(currentNumber != number)
+    {
+        if (buffer->head == nullptr) {
+            buffer->head = new Node;
+            buffer->head->value = list->current->value;
+            buffer->head->next = nullptr;
+            buffer->current = buffer->head;
+        } else {
+            buffer->current->next = new Node;
+            buffer->current->next->value = list->current->value;
+            buffer->current->next->next = nullptr;
+            buffer->current = buffer->current->next;
+        }
+        list->current = list->current->next;
+        currentNumber++;
+    }
+}
+
+void LinkedList::pasteTextCursor(LinkedList *list, LinkedList *buffer){
+    while (list->current->value != '|') {
+        list->previous = list->current;
+        list->current = list->current->next;
+    }
+
+    list->previous->next = list->current->next;
+    list->current = list->current->next;
+
+    Node *temp = list->current->next;
+    buffer->current->next = temp;
+    list->current->next = buffer->head;
+}
+
+void LinkedList::deleteTextCursor(LinkedList *list, int number){
+    int currentNumber = 0;
+
+    while (list->current->value != '|') {
+        list->previous = list->current;
+        list->current = list->current->next;
+    }
+
+    list->previous->next = list->current->next;
+    list->current = list->current->next;
+
+    while(currentNumber != number)
+    {
+        list->previous->next = list->current->next;
+        list->current = list->previous->next;
+        currentNumber++;
+    }
+}
+
+void LinkedList::insertTextCursor(LinkedList *list, std::string text){
+    while (list->current->value != '|') {
+        list->previous = list->current;
+        list->current = list->current->next;
+    }
+
+    list->previous->next = list->current->next;
+    list->current = list->current->next;
+
+    Node* temp = list->current->next;
+    int i = 0;
+    while (text[i] != '\0') {
+        list->current->next = new Node;
+        list->current->next->value = text[i];
+        list->current->next->next = nullptr;
+        list->current = list->current->next;
+        i++;
+    }
+    list->current->next = temp;
 }
