@@ -24,10 +24,9 @@ int main() {
     cout << "\nAll commands:\n1-enter new text.\n2-start the new line.\n3-saving the information to your file."
             "\n4-loading the information from your file.\n5-print the current text to console.\n6-insert the text "
             "by line and symbol index.\n7-search by word.\n8-delete command.\n9-undo command.\n10-redo command."
-            "\n11-cut command.\n12-paste command.\n13-copy command.\n14-replacement command.\n";
+            "\n11-cut command.\n12-paste command.\n13-copy command.\n14-replacement command.\n15-cursor logic.\n";
 
     while (true) {
-        //system("clear");
         cout << "\nChoose the command: ";
         cin >> command;
         switch (command) {

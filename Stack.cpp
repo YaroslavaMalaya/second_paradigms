@@ -26,7 +26,7 @@ void pushCurrentCommand(LinkedList* list, std::stack<LinkedList>* stack) {
 }
 
 LinkedList undo(std::stack<LinkedList>* stack, std::stack<LinkedList>* stack2) {
-    if (stack->size() > 1) {
+    if (stack->size() > 2) {
         LinkedList list1 = stack->top();
         stack->pop();
         pushCurrentCommand(&list1, stack2);
