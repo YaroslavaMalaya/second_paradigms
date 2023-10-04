@@ -231,10 +231,22 @@ void LinkedList::cutText(LinkedList* list, int lineIndex, int startIndex, int nu
 
     if (lineIndex == 0 && startIndex == 0) {
         while (currentNumber != number) {
+            if (buffer->head == nullptr) {
+                buffer->head = new Node;
+                buffer->head->value = list->current->value;
+                buffer->head->next = nullptr;
+                buffer->current = buffer->head;
+            } else {
+                buffer->current->next = new Node;
+                buffer->current->next->value = list->current->value;
+                buffer->current->next->next = nullptr;
+                buffer->current = buffer->current->next;
+            }
             list->current = list->current->next;
             currentNumber++;
         }
         list->head = list->current;
+
     } else {
         while (currentLine < lineIndex) {
             list->previous = list->current;
@@ -257,7 +269,6 @@ void LinkedList::cutText(LinkedList* list, int lineIndex, int startIndex, int nu
             }
             currentSymbol++;
         }
-
         while(currentNumber != number)
         {
             if (buffer->head == nullptr) {
@@ -460,6 +471,7 @@ void LinkedList::cutTextCursor(LinkedList *list, LinkedList *buffer, int number)
     buffer->current = nullptr;
     buffer->previous = nullptr;
     int currentNumber = 0;
+    list->current = list->head;
 
     while (list->current->value != '|') {
         list->previous = list->current;
@@ -493,7 +505,7 @@ void LinkedList::copyTextCursor(LinkedList *list, LinkedList *buffer, int number
     buffer->current = nullptr;
     buffer->previous = nullptr;
     int currentNumber = 0;
-
+    list->current = list->head;
     while (list->current->value != '|') {
         list->previous = list->current;
         list->current = list->current->next;
@@ -521,6 +533,7 @@ void LinkedList::copyTextCursor(LinkedList *list, LinkedList *buffer, int number
 }
 
 void LinkedList::pasteTextCursor(LinkedList *list, LinkedList *buffer){
+    list->current = list->head;
     while (list->current->value != '|') {
         list->previous = list->current;
         list->current = list->current->next;
@@ -536,6 +549,7 @@ void LinkedList::pasteTextCursor(LinkedList *list, LinkedList *buffer){
 
 void LinkedList::deleteTextCursor(LinkedList *list, int number){
     int currentNumber = 0;
+    list->current = list->head;
 
     while (list->current->value != '|') {
         list->previous = list->current;
@@ -554,6 +568,7 @@ void LinkedList::deleteTextCursor(LinkedList *list, int number){
 }
 
 void LinkedList::insertTextCursor(LinkedList *list, std::string text){
+    list->current = list->head;
     while (list->current->value != '|') {
         list->previous = list->current;
         list->current = list->current->next;

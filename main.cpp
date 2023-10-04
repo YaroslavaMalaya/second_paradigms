@@ -102,6 +102,7 @@ int main() {
                 cout << "Choose line and index and number of symbols: ";
                 cin >> lineIndex >> startIndex >> numberIndex;
                 myList.cutText(&myList, lineIndex, startIndex, numberIndex, &buffer);
+                myList.printLinkedList(&buffer);
                 myList.printLinkedList(&myList);
                 break;
             case 12:
