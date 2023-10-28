@@ -12,4 +12,6 @@ add_executable(second_paradigms main.cpp
         fileWriterReader.h
         DynamicLib.cpp
         DynamicLib.h
+        CommandProcessor.cpp
+        CommandProcessor.h
 )
