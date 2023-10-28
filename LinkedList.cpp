@@ -1,8 +1,10 @@
 #include "LinkedList.h"
+#include "fileWriterReader.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <stack>
+using namespace std;
 
 void LinkedList::addCharElement(LinkedList* list, string elements) {
     int i = 0;
@@ -36,17 +38,27 @@ void LinkedList::addNewLine(LinkedList* list) {
     }
 }
 
-void LinkedList::saveTextToFile(LinkedList* list, const string& fileName) {
-    ofstream file(fileName, ios::app);
+//void LinkedList::saveTextToFile(LinkedList* list, const string& fileName) {
+//    ofstream file(fileName, ios::app);
+//    Node* current = list->head;
+//    while (current != nullptr) {
+//        file.put(current->value);
+//        current = current->next;
+//    }
+//    file.close();
+//}
+
+void LinkedList::saveTextToFile(LinkedList* list, const string& filePath) {
+    string content;
     Node* current = list->head;
     while (current != nullptr) {
-        file.put(current->value);
+        content.push_back(current->value);
         current = current->next;
     }
-    file.close();
+    FileWriter::write(filePath, content);
 }
 
-void LinkedList::loadTextFromFile(LinkedList* list, const string& fileName) {
+void LinkedList::loadTextFromFile(LinkedList* list, const string& filePath) {
     Node* current = list->head;
     while (current != nullptr) {
         Node* next = current->next;
@@ -56,33 +68,98 @@ void LinkedList::loadTextFromFile(LinkedList* list, const string& fileName) {
     list->head = nullptr;
     list->current = nullptr;
 
-    ifstream file(fileName);
-    char block[100];
-    int i = 0;
+    string content = FileReader::read(filePath);
+    for (char c : content) {
+        Node* newNode = new Node;
+        newNode->value = c;
+        newNode->next = nullptr;
 
-    while (file.getline(block, sizeof(block))) {
-        while (block[i] != '\0') {
-            if (list->head == nullptr) {
-                list->head = new Node;
-                list->head->value = block[i];
-                list->head->next = nullptr;
-                list->current = list->head;
-            } else {
-                list->current->next = new Node;
-                list->current->next->value = block[i];
-                list->current->next->next = nullptr;
-                list->current = list->current->next;
-            }
-            i++;
+        if (list->head == nullptr) {
+            list->head = newNode;
+            list->current = newNode;
+        } else {
+            list->current->next = newNode;
+            list->current = newNode;
         }
-        list->current->next = new Node;
-        list->current->next->value = '\n';
-        list->current->next->next = nullptr;
-        list->current = list->current->next;
-        i = 0;
     }
-    file.close();
 }
+
+char* LinkedList::linkedListToChar(LinkedList *list) {
+    size_t length = 0;
+    Node* temp = list->head;
+    while (temp != nullptr) {
+        length++;
+        temp = temp->next;
+    }
+
+    char* result = new char[length + 1];
+    temp = list->head;
+    for (size_t i = 0; i < length; ++i) {
+        result[i] = temp->value;
+        temp = temp->next;
+    }
+    result[length] = '\0';
+    return result;
+}
+
+void LinkedList::charToLinkedList(LinkedList *list, char *data){
+    Node* temp = list->head;
+    while (temp != nullptr) {
+        Node* next = temp->next;
+        delete temp;
+        temp = next;
+    }
+    list->head = nullptr;
+    list->current = nullptr;
+
+    size_t length = strlen(data);
+    list->head = new Node;
+    list->head->value = data[0];
+    Node* current = list->head;
+    for (size_t i = 1; i < length; ++i) {
+        current->next = new Node;
+        current->next->value = data[i];
+        current = current->next;
+    }
+}
+
+//void LinkedList::loadTextFromFile(LinkedList* list, const string& fileName) {
+//    Node* current = list->head;
+//    while (current != nullptr) {
+//        Node* next = current->next;
+//        delete current;
+//        current = next;
+//    }
+//    list->head = nullptr;
+//    list->current = nullptr;
+//
+//    ifstream file(fileName);
+//    char block[100];
+//    int i = 0;
+//
+//    while (file.getline(block, sizeof(block))) {
+//        while (block[i] != '\0') {
+//            if (list->head == nullptr) {
+//                list->head = new Node;
+//                list->head->value = block[i];
+//                list->head->next = nullptr;
+//                list->current = list->head;
+//            } else {
+//                list->current->next = new Node;
+//                list->current->next->value = block[i];
+//                list->current->next->next = nullptr;
+//                list->current = list->current->next;
+//            }
+//            i++;
+//        }
+//        list->current->next = new Node;
+//        list->current->next->value = '\n';
+//        list->current->next->next = nullptr;
+//        list->current = list->current->next;
+//        i = 0;
+//    }
+//    file.close();
+//}
 
 void LinkedList::insertText(LinkedList* list, int lineIndex, int symbolIndex, string text) {
     if (lineIndex == 0 && symbolIndex == 0) {

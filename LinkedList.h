@@ -36,4 +36,6 @@ public:
     void pasteTextCursor(LinkedList* list, LinkedList* buffer);
     void deleteTextCursor(LinkedList* list, int number);
     void insertTextCursor(LinkedList* list, string text);
+    char* linkedListToChar(LinkedList* list);
+    void charToLinkedList(LinkedList* list, char* data);
 };

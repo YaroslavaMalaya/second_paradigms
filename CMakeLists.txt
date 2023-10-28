@@ -8,4 +8,8 @@ add_executable(second_paradigms main.cpp
         LinkedList.cpp
         Stack.cpp
         Stack.h
+        fileWriterReader.cpp
+        fileWriterReader.h
+        DynamicLib.cpp
+        DynamicLib.h
 )
