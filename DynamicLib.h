@@ -23,7 +23,7 @@ private:
 class CaesarCipher {
 public:
     CaesarCipher(const string& libPath) {
-        libLoader = make_unique<DynamicLibLoader>(libPath);
+        libLoader = new DynamicLibLoader(libPath);
         encrypt_ptr = (encrypt_ptr_t)libLoader->getFunction("encrypt");
         decrypt_ptr = (decrypt_ptr_t)libLoader->getFunction("decrypt");
     }
@@ -39,7 +39,7 @@ public:
     }
 
 private:
-    unique_ptr<DynamicLibLoader> libLoader;
+    DynamicLibLoader* libLoader;
     encrypt_ptr_t encrypt_ptr;
     decrypt_ptr_t decrypt_ptr;
 };
